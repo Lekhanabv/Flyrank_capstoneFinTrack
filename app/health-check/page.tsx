@@ -15,12 +15,16 @@ export default function HealthCheckPage() {
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
 
     async function fetchHealthData() {
       try {
+        setLoading(true);
+        setError(null);
+
         const response = await fetch("https://jsonplaceholder.typicode.com/posts/1");
 
         if (!response.ok) {
@@ -50,7 +54,7 @@ export default function HealthCheckPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [retryKey]);
 
   return (
     <AppShell title="Health Check">
@@ -77,6 +81,15 @@ export default function HealthCheckPage() {
             <p className="text-sm font-semibold uppercase tracking-[0.16em]">Error</p>
             <p className="mt-3 text-lg font-medium">Unable to fetch health data</p>
             <p className="mt-2 text-sm text-rose-600">{error}</p>
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={() => setRetryKey((value) => value + 1)}
+                className="rounded-xl bg-rose-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-rose-500"
+              >
+                Retry request
+              </button>
+            </div>
           </div>
         ) : post ? (
           <div className="space-y-5">
